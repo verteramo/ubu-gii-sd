@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Chat-1.0" default="compile" basedir=".">
+	<description>
+Chat - Practica 1 - Sistemas Distribuidos  - GII - 2013-2014
+ </description>
+
+	<!-- Properties of the project... -->
+
+	<!-- Dir properties -->
+	<property name="name.game" value="chat" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="dist.dir" value="${basedir}/dist" />
+	<property name="doc.dir" value="${basedir}/doc" />
+	<property name="doccheck.dir" value="${basedir}/doccheck" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="backup.dir" value="${basedir}/backup" />
+	<property name="app.version" value="1.0" />
+
+	<!-- ==================== Definition of CLASSPATH ====================================== -->
+	<path id="compile.classpath">
+		<pathelement location="${build.dir}" />
+		<fileset dir="${lib.dir}">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<!-- 
+======================================
+Development Targets
+======================================
+-->
+
+	<target name="all" description="Development targets." depends="clean, prepare, compile, dist, allDoc, backupProject" />
+
+	<!-- ==================== Prepare Target ==================================== -->
+	<target description="Create directories" name="prepare">
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${dist.dir}" />
+		<mkdir dir="${dist.dir}/lib" />
+		<mkdir dir="${doc.dir}" />
+		<mkdir dir="${doccheck.dir}" />
+		<mkdir dir="${backup.dir}" />
+	</target>
+
+	<!-- ==================== Clean Target ==================================== -->
+	<!--
+  Delete the previous files from directories, to rebuild the complete products.
+-->
+
+	<target description="Delete the directories with generated products ." name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+		<delete dir="${doc.dir}" />
+		<delete dir="${doccheck.dir}" />
+		<delete dir="${backup.dir}" />
+	</target>
+
+
+	<!-- ==================== Compile Target ==================================== -->
+	<target name="compile" depends="prepare" description="Compile the full source files.">
+		<javac encoding="UTF-8" srcdir="${src.dir}" destdir="${build.dir}" source="1.7" target="1.7" includeantruntime="false">
+			<classpath refid="compile.classpath" />
+		</javac>
+	</target>
+
+
+	<!-- ==================== Application Target ==================================== -->
+	<target name="dist" depends="compile" description="Generate the application (jar file).">
+		<jar destfile="${dist.dir}/${name.game}-${app.version}.jar" basedir="${build.dir}" includes="es/**">
+		</jar>
+	</target>
+
+
+	<!--
+=========================================
+Documentation Targets
+=========================================
+-->
+	<!-- ==================== All Doc Targets ================================== -->
+	<target name="allDoc" depends="javadoc, doccheck" />
+
+
+	<!-- ==================== Javadoc Target ================================== -->
+	<target name="javadoc" depends="prepare,compile" description="JavaDoc API">
+		<javadoc encoding="UTF-8" charset="UTF-8" docencoding="UTF-8" destdir="${doc.dir}" packagenames="es.*" source="1.7" access="private">
+			<link offline="true" href="http://docs.oracle.com/javase/7/docs/api/" packagelistLoc="${resources.dir}" />
+			<classpath>
+				<pathelement location="${build.dir}" />
+				<pathelement path="." />
+			</classpath>
+			
+			<fileset dir="${src.dir}" casesensitive="yes">
+				<include name="**/*.java" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<!-- ==================== Javadoc Doccheck Target ================================== -->
+
+	<target name="doccheck" depends="prepare,compile" description="Check the documentation">
+		<javadoc encoding="UTF-8" destdir="${doccheck.dir}" packagenames="es.*" 
+			doclet="com.sun.tools.doclets.doccheck.DocCheck" 
+			docletpath="${lib.dir}/doccheck.jar" 
+			source="1.7" defaultexcludes="yes" access="private">
+			<classpath refid="compile.classpath" />
+					<fileset dir="${src.dir}" casesensitive="yes">
+							<include name="**/*.java" />
+					</fileset>
+		</javadoc>
+	</target>
+
+	<!-- ==================== Backup Project Target ==================================== -->
+	<target name="backupProject" depends="clean" description="Generate the project (jar file).">
+		<delete dir="${basedir}/backup" />
+		<jar destfile="${basedir}/backup/${name.game}-${app.version}-project.jar" basedir="." excludes="${basedir}/backup/*.jar" includes="**/*.*" />
+	</target>
+</project>

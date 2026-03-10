@@ -1,0 +1,35 @@
+package org.verteramo;
+
+import java.util.Iterator;
+
+import es.ubu.lsi.common.ChatMessage;
+
+public class BanChatServer extends AbstractChatServer {
+
+    protected BanChatServer(int port) {
+        super(port);
+    }
+
+    @Override
+    public synchronized void broadcast(ChatMessage message) {
+        Iterator<Client> clients = getClients();
+
+        while (clients.hasNext()) {
+            Client client = clients.next();
+
+            if (client.isAlive()) {
+                handleMessage(message, client.getClientId());
+            } else {
+                clients.remove();
+                show("Disconnected Client %s removed from list.", client.getClientUsername());
+            }
+        }
+    }
+
+    @Override
+    protected boolean handleMessage(ChatMessage chatMessage, int clientId) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
+    }
+
+}
