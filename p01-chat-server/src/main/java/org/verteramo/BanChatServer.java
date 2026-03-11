@@ -18,17 +18,16 @@ public class BanChatServer extends AbstractChatServer {
             Client client = clients.next();
 
             if (client.isAlive()) {
-                handleMessage(message, client.getClientId());
+                handleMessage(message, client.getId());
             } else {
                 clients.remove();
-                show("Disconnected Client %s removed from list.", client.getClientUsername());
+                show("Disconnected Client %s removed from list.", client.getUsername());
             }
         }
     }
 
     @Override
     protected boolean handleMessage(ChatMessage chatMessage, int clientId) {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'handleMessage'");
     }
 
