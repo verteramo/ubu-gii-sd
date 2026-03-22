@@ -1,27 +1,23 @@
-*target*
-*.jar
-*.war
-*.ear
+# Salidas de compilación (Maven, Ant y General)
+target/
+build/
+dist/
+bin/
 *.class
 
-# eclipse specific git ignore
-*.pydevproject
-.project
-.metadata
-bin/**
-tmp/**
-tmp/**/*
-*.tmp
+# Documentación generada y backups
+doccheck/
+backup/
 *.bak
-*.swp
-*~.nib
-local.properties
-.classpath
+
+# Archivos de configuración de IDE (Eclipse)
 .settings/
-.loadpath
-
-# External tool builders
-.externalToolBuilders/
-
-# Locally stored "Eclipse launch configurations"
+.project
+.classpath
+.metadata/
 *.launch
+
+# Archivos temporales
+tmp/
+*.tmp
+*.swp
