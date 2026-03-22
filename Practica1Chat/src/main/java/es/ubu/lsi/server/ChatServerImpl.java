@@ -136,6 +136,42 @@ public class ChatServerImpl implements ChatServer {
 	}
 
 	/**
+	 * Realiza un broadcast selectivo por nombre de usuario
+	 * @param username Nombre de usuario que envía el mensaje
+	 * @param message Mensaje
+	 */
+	public synchronized void selectiveBroadcast(String username, ChatMessage message) {
+		// add HH:mm:ss and \n to the message
+		String time = sdf.format(new Date());
+		String messageLf = String.format("%s %s: %s\n", time, username, message.getMessage());
+		message.setMessage(messageLf);
+
+		// display message on console
+		System.out.print(messageLf);
+
+		// we loop in reverse order in case we would have to remove a Client
+		// because it has disconnected
+		for (int i = clients.size(); --i >= 0;) {
+			ServerThreadForClient ct = clients.get(i);
+			if (!ct.blackList.contains(username)) {
+				// try to write to the Client if it fails remove it from the list
+				if (!ct.sendMessage(message)) {
+					clients.remove(i);
+					show("Disconnected Client " + ct.username
+							+ " removed from list.");
+				}
+			}
+			else {
+				// No hay que olvidar verificar si sigue en línea
+				if (!ct.socket.isConnected()) {
+					ct.close();
+					clients.remove(i);
+				}
+			}
+		}
+	}
+
+	/**
 	 * Broadcasts a message to all clients.
 	 * 
 	 * @param message message
@@ -296,8 +332,9 @@ public class ChatServerImpl implements ChatServer {
 						alive = false;
 						break;
 					case MESSAGE:
-						chatMessage.setMessage(username + ": " + chatMessage.getMessage());
-						broadcast(chatMessage);
+						// Cuando se trata de un mensaje de usuario
+						// Se realiza un broadcast selectivo
+						selectiveBroadcast(username, chatMessage);
 						break;
 					case LOGOUT:
 						show(username + " disconnected with a LOGOUT message.");
@@ -333,24 +370,6 @@ public class ChatServerImpl implements ChatServer {
 			}
 		}
 
-		private String getUsername(ChatMessage message) {
-			if (message.getType() == MessageType.MESSAGE) {
-				// Separa en hora + texto
-				String[] result = message.getMessage().split(" ");
-
-				if (result.length > 1) {
-					// Separar en usuario + texto
-					String[] result2 = result[1].split(":");
-
-					if (result2.length > 0) {
-						return result2[0];
-					}
-				}
-			}
-
-			return null;
-		}
-
 		/**
 		 * Write a message to the client output stream.
 		 * 
@@ -365,11 +384,7 @@ public class ChatServerImpl implements ChatServer {
 			}
 			// write the message to the stream
 			try {
-				String user = getUsername(msg);
-
-				if (user == null || !blackList.contains(user)) {
-					sOutput.writeObject(msg);
-				}
+				sOutput.writeObject(msg);
 			}
 			// if an error occurs, do not abort just inform the user
 			catch (IOException e) {
