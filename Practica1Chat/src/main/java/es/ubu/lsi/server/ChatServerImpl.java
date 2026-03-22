@@ -9,7 +9,7 @@ import es.ubu.lsi.common.ChatMessage;
 import es.ubu.lsi.common.ChatMessage.MessageType;
 
 /**
- * Chat server. Based on code available at: 
+ * Chat server. Based on code available at:
  * http://www.dreamincode.net/forums/topic/259777-a-simple-chat-program-with-clientserver-gui-optional/
  * 
  * Modified by Raúl Marticorena & Joaquín P- Seco
@@ -23,27 +23,27 @@ public class ChatServerImpl implements ChatServer {
 
 	/** Default port. */
 	private static final int DEFAULT_PORT = 1500;
-	
-	/** Unique ID for each connection.*/	
+
+	/** Unique ID for each connection. */
 	private static int clientId;
-	
+
 	/** Client list. */
 	private List<ServerThreadForClient> clients;
-	
+
 	/** Util class to display time. */
 	private static SimpleDateFormat sdf;
-	
+
 	/** Port number to listen for connection. */
 	private int port;
-	
+
 	/** Flag will be turned of to stop the server. */
 	private boolean alive;
-	
+
 	/** Server socket. */
-	private ServerSocket serverSocket; 
-	
+	private ServerSocket serverSocket;
+
 	static {
-		 sdf = new SimpleDateFormat("HH:mm:ss"); // to display hh:mm:ss
+		sdf = new SimpleDateFormat("HH:mm:ss"); // to display hh:mm:ss
 	}
 
 	/**
@@ -77,9 +77,9 @@ public class ChatServerImpl implements ChatServer {
 				// if I was asked to stop
 				if (!alive)
 					break;
-				ServerThreadForClient t = new ServerThreadForClient(socket); 
-				// make a thread of it				
-				clients.add(t); // save it in the ArrayList				
+				ServerThreadForClient t = new ServerThreadForClient(socket);
+				// make a thread of it
+				clients.add(t); // save it in the ArrayList
 				t.start();
 			}
 			shutdown();
@@ -114,7 +114,6 @@ public class ChatServerImpl implements ChatServer {
 			show("Exception closing the server and clients: " + e);
 		}
 	}
-	
 
 	/**
 	 * Shows an event (not a message) to the console.
@@ -124,6 +123,16 @@ public class ChatServerImpl implements ChatServer {
 	private void show(String event) {
 		String time = sdf.format(new Date()) + " " + event;
 		System.out.println(time);
+	}
+
+	/**
+	 * Sobrecarga que permite añadir parámetros al mensaje
+	 * 
+	 * @param format Formato
+	 * @param args   Argumentos
+	 */
+	private void show(String format, Object... args) {
+		show(String.format(format, args));
 	}
 
 	/**
@@ -137,10 +146,10 @@ public class ChatServerImpl implements ChatServer {
 		String time = sdf.format(new Date());
 		String messageLf = time + " " + message.getMessage() + "\n";
 		message.setMessage(messageLf);
-		
+
 		// display message on console
 		System.out.print(messageLf);
-		
+
 		// we loop in reverse order in case we would have to remove a Client
 		// because it has disconnected
 		for (int i = clients.size(); --i >= 0;) {
@@ -172,7 +181,7 @@ public class ChatServerImpl implements ChatServer {
 		}
 	}
 
-	/** 
+	/**
 	 * Runs the server with a default port if is not specified as argument.
 	 * 
 	 * @param args arguments
@@ -182,19 +191,19 @@ public class ChatServerImpl implements ChatServer {
 		// start server on port 1500 unless a PortNumber is specified
 		int portNumber = DEFAULT_PORT;
 		switch (args.length) {
-		case 1:
-			try {
-				portNumber = Integer.parseInt(args[0]);
-			} catch (Exception e) {
-				System.err.println("Invalid port number.");
-				System.err.println("Usage is: > java Server [portNumber]");
+			case 1:
+				try {
+					portNumber = Integer.parseInt(args[0]);
+				} catch (Exception e) {
+					System.err.println("Invalid port number.");
+					System.err.println("Usage is: > java Server [portNumber]");
+					return;
+				}
+			case 0:
+				break;
+			default:
+				System.out.println("Usage is: > java Server [portNumber]");
 				return;
-			}
-		case 0:
-			break;
-		default:
-			System.out.println("Usage is: > java Server [portNumber]");
-			return;
 
 		}
 		// create a server object and start it
@@ -202,17 +211,19 @@ public class ChatServerImpl implements ChatServer {
 		server.startup();
 	}
 
-	/** 
-	 * One instance of this thread will run for each client. 
+	/**
+	 * One instance of this thread will run for each client.
 	 */
 	private class ServerThreadForClient extends Thread {
-		
+
+		private Set<String> blackList;
+
 		/** Socket where to listen/talk. */
 		private Socket socket;
-		
+
 		/** Stream input. */
 		private ObjectInputStream sInput;
-		
+
 		/** Stream output. */
 		private ObjectOutputStream sOutput;
 
@@ -220,16 +231,17 @@ public class ChatServerImpl implements ChatServer {
 		 * Unique id (easier for disconnection).
 		 */
 		private int id;
-		
+
 		/** Username. */
 		private String username;
 
 		/**
-		 * Constructor. 
+		 * Constructor.
 		 * 
 		 * @param socket socket
 		 */
 		private ServerThreadForClient(Socket socket) {
+			blackList = new HashSet<>();
 			// a unique id
 			id = ++clientId;
 			this.socket = socket;
@@ -244,15 +256,14 @@ public class ChatServerImpl implements ChatServer {
 				username = (String) sInput.readObject();
 				sOutput.writeInt(id);
 				sOutput.flush();
-				show(username + " just connected.");	
-				show("connected with id:" +id);	
-				ChatMessage chatMessage = new ChatMessage(id, MessageType.MESSAGE,username + " now connected");
+				show(username + " just connected.");
+				show("connected with id:" + id);
+				ChatMessage chatMessage = new ChatMessage(id, MessageType.MESSAGE, username + " now connected");
 				broadcast(chatMessage);
 			} catch (IOException e) {
 				show("Exception creating new I/O Streams: " + e);
 				return;
-			}
-			catch (ClassNotFoundException e) {
+			} catch (ClassNotFoundException e) {
 				close(); // organized panic case...
 				throw new RuntimeException("Wrong message type", e);
 			}
@@ -279,34 +290,66 @@ public class ChatServerImpl implements ChatServer {
 
 				// Switch on the type of message received
 				switch (chatMessage.getType()) {
-				case SHUTDOWN:
-					show(username + " shutdown chat system.");
-					runningThread = false;
-					alive = false;					
-					break;
-				case MESSAGE:
-					chatMessage.setMessage(username + ": " + chatMessage.getMessage());
-					broadcast(chatMessage);
-					break;
-				case LOGOUT:
-					show(username + " disconnected with a LOGOUT message.");
-					chatMessage.setMessage(username + " leaving chat room!");
-					broadcast(chatMessage);
-					runningThread = false;
-					break;
+					case SHUTDOWN:
+						show(username + " shutdown chat system.");
+						runningThread = false;
+						alive = false;
+						break;
+					case MESSAGE:
+						chatMessage.setMessage(username + ": " + chatMessage.getMessage());
+						broadcast(chatMessage);
+						break;
+					case LOGOUT:
+						show(username + " disconnected with a LOGOUT message.");
+						chatMessage.setMessage(username + " leaving chat room!");
+						broadcast(chatMessage);
+						runningThread = false;
+						break;
+					case BAN:
+					case UNBAN:
+						String bannedUser = chatMessage.getMessage();
+						// Si el usuario no envía un nombre de usuario
+						// Se ignora la instrucción
+						if (!bannedUser.isEmpty()) {
+							if (chatMessage.getType() == MessageType.BAN) {
+								blackList.add(bannedUser);
+								show("%s ha baneado a %s", username, bannedUser);
+							} else {
+								blackList.remove(bannedUser);
+								show("%s ha desbaneado a %s", username, bannedUser);
+							}
+						}
+						break;
 				} // switch
 			}
 			// remove myself from the arrayList containing the list of the
-			// connected Clients			
+			// connected Clients
 			remove(id);
 			show("Removing " + username + " with id: " + id);
 			close();
-			
+
 			if (!alive) { // if was a shutdown close server
 				shutdown();
 			}
-		}		
-		
+		}
+
+		private String getUsername(ChatMessage message) {
+			if (message.getType() == MessageType.MESSAGE) {
+				// Separa en hora + texto
+				String[] result = message.getMessage().split(" ");
+
+				if (result.length > 1) {
+					// Separar en usuario + texto
+					String[] result2 = result[1].split(":");
+
+					if (result2.length > 0) {
+						return result2[0];
+					}
+				}
+			}
+
+			return null;
+		}
 
 		/**
 		 * Write a message to the client output stream.
@@ -322,7 +365,11 @@ public class ChatServerImpl implements ChatServer {
 			}
 			// write the message to the stream
 			try {
-				sOutput.writeObject(msg);
+				String user = getUsername(msg);
+
+				if (user == null || !blackList.contains(user)) {
+					sOutput.writeObject(msg);
+				}
 			}
 			// if an error occurs, do not abort just inform the user
 			catch (IOException e) {
@@ -332,13 +379,13 @@ public class ChatServerImpl implements ChatServer {
 			}
 			return true;
 		} // writeMsg
-		
+
 		/**
 		 * Close streams and socket for client.
 		 */
 		private void close() {
 			// try to close the connection
-			try {				
+			try {
 				if (sOutput != null)
 					sOutput.close();
 				if (sInput != null)

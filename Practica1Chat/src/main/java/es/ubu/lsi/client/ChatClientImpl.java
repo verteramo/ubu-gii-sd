@@ -16,7 +16,7 @@ import es.ubu.lsi.common.ChatMessage.MessageType;
  *
  */
 public class ChatClientImpl implements ChatClient {
-	
+
 	/** Input stream. */
 	private ObjectInputStream sInput; // to read from the socket
 	/** Output stream. */
@@ -30,7 +30,7 @@ public class ChatClientImpl implements ChatClient {
 	private String username;
 	/** Port. */
 	private int port;
-	
+
 	/** Flag to keep running main thread. */
 	private boolean carryOn = true;
 
@@ -40,8 +40,8 @@ public class ChatClientImpl implements ChatClient {
 	/**
 	 * Constructor.
 	 * 
-	 * @param server server
-	 * @param port port
+	 * @param server   server
+	 * @param port     port
 	 * @param username user name
 	 * 
 	 */
@@ -67,19 +67,17 @@ public class ChatClientImpl implements ChatClient {
 			display(msg);
 			sInput = new ObjectInputStream(socket.getInputStream());
 			sOutput = new ObjectOutputStream(socket.getOutputStream());
-			
-		}
-		catch (IOException eIO) {
+
+		} catch (IOException eIO) {
 			display("Exception creating new Input/output Streams: " + eIO);
 			return false;
-		}
-		catch (Exception ec) {
+		} catch (Exception ec) {
 			display("Error connectiong to server:" + ec);
 			return false;
-		}			
+		}
 		// Login and receive id
-		try {			
-			sOutput.writeObject(username);	
+		try {
+			sOutput.writeObject(username);
 			sOutput.flush();
 			id = sInput.readInt();
 		} catch (IOException eIO) {
@@ -123,10 +121,10 @@ public class ChatClientImpl implements ChatClient {
 	 */
 	@Override
 	public void disconnect() {
-		
+
 		try {
 			display("Trying to disconnect and close client with username " + username);
-			if (sInput != null)  {
+			if (sInput != null) {
 				sInput.close();
 				sInput = null;
 			}
@@ -139,10 +137,9 @@ public class ChatClientImpl implements ChatClient {
 				socket = null;
 			}
 		} catch (Exception e) {
-			
+
 			display("Disconnect with error, closing resources, closed previously.");
-		}
-		finally{
+		} finally {
 			display("Bye!");
 			carryOn = false;
 		}
@@ -172,29 +169,29 @@ public class ChatClientImpl implements ChatClient {
 
 		// depending of the number of arguments provided we fall through
 		switch (args.length) {
-		// > javac Client username portNumber serverAddr
-		case 3:
-			serverAddress = args[2];
-			// > javac Client username portNumber
-		case 2:
-			try {
-				portNumber = Integer.parseInt(args[1]);
-			} catch (Exception e) {
-				System.out.println("Invalid port number.");
-				System.out
-						.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
+			// > javac Client username portNumber serverAddr
+			case 3:
+				serverAddress = args[2];
+				// > javac Client username portNumber
+			case 2:
+				try {
+					portNumber = Integer.parseInt(args[1]);
+				} catch (Exception e) {
+					System.out.println("Invalid port number.");
+					System.out
+							.println("Usage is: > java Client [username] [portNumber] [serverAddress]");
+					return;
+				}
+				// > javac Client username
+			case 1:
+				userName = args[0];
+				// > java Client
+			case 0:
+				break;
+			// invalid number of arguments
+			default:
+				System.err.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
 				return;
-			}
-			// > javac Client username
-		case 1:
-			userName = args[0];
-			// > java Client
-		case 0:
-			break;
-		// invalid number of arguments
-		default:
-			System.err.println("Usage is: > java Client [username] [portNumber] {serverAddress]");
-			return;
 		}
 		// create the Client object
 		ChatClient client = new ChatClientImpl(serverAddress, portNumber, userName);
@@ -219,21 +216,27 @@ public class ChatClientImpl implements ChatClient {
 							MessageType.LOGOUT.toString()));
 					// break to do the disconnect
 					break;
-					
+
 				} else if (userMsg.equalsIgnoreCase(MessageType.SHUTDOWN.toString())) {
 					client.sendMessage(new ChatMessage(clientChat.id, MessageType.SHUTDOWN,
 							MessageType.SHUTDOWN.toString()));
 					// break to do the disconnect
 					break;
-				
-				} else { // default to ordinary message
+
+				} else if (userMsg.toUpperCase().startsWith(MessageType.BAN.toString())) {
+					String username = userMsg.toLowerCase().replace(MessageType.BAN.toString().toLowerCase(), "").trim();
+					client.sendMessage(new ChatMessage(clientChat.id, MessageType.BAN, username));
+				} else if (userMsg.toUpperCase().startsWith(MessageType.UNBAN.toString())) {
+					String username = userMsg.toLowerCase().replace(MessageType.UNBAN.toString().toLowerCase(), "").trim();
+					client.sendMessage(new ChatMessage(clientChat.id, MessageType.UNBAN, username));
+				} else {
 					client.sendMessage(new ChatMessage(clientChat.id, MessageType.MESSAGE, userMsg));
 				}
 				System.out.println();
 			} // try with resources
 		}
 		// done disconnect by logout, not shutdown
-		client.disconnect();		
+		client.disconnect();
 	}
 
 	/**
@@ -241,7 +244,7 @@ public class ChatClientImpl implements ChatClient {
 	 * 
 	 */
 	class ChatClientListener implements Runnable {
-		
+
 		/**
 		 * Run.
 		 */
@@ -254,7 +257,7 @@ public class ChatClientImpl implements ChatClient {
 						System.out.println(msg.getMessage());
 						System.out.print("\n> ");
 					}
-						
+
 				} catch (IOException e) {
 					display("Server has closed the connection. ");
 					carryOn = false;
