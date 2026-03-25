@@ -127,7 +127,7 @@ public class ChatServerImpl implements ChatServer {
 	}
 
 	/**
-	 * Sobrecarga que permite añadir parámetros al mensaje
+	 * Sobrecarga que permite añadir parámetros al mensaje.
 	 * 
 	 * @param format Formato
 	 * @param args   Argumentos
@@ -160,10 +160,10 @@ public class ChatServerImpl implements ChatServer {
 	}
 
 	/**
-	 * Bucle inverso por la lista de clientes conectados
-	 * Permite aplicar un consumidor por cada cliente
+	 * Bucle inverso por la lista de clientes conectados.
+	 * Permite aplicar un consumidor por cada cliente.
 	 * Verifica si el cliente está desconectado, si lo estuviera es eliminado de la
-	 * lista
+	 * lista.
 	 * 
 	 * @param consumer Consumidor que realiza alguna función con un cliente
 	 */
@@ -183,7 +183,7 @@ public class ChatServerImpl implements ChatServer {
 	}
 
 	/**
-	 * Realiza un broadcast selectivo por nombre de usuario
+	 * Realiza un broadcast selectivo por nombre de usuario.
 	 * 
 	 * @param username Nombre de usuario que envía el mensaje
 	 * @param message  Mensaje
@@ -272,6 +272,7 @@ public class ChatServerImpl implements ChatServer {
 	 */
 	private class ServerThreadForClient extends Thread {
 
+		/** Lista negra de usuarios baneados. */
 		private Set<String> blackList;
 
 		/** Socket where to listen/talk. */

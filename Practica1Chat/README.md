@@ -1,6 +1,7 @@
 # Práctica 01 - Sistemas Distribuidos - GII - UBU
 - Alumno: Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
 - Profesor: José Manuel Aroca Fernández
+- Repositorio: [https://github.com/verteramo/ubu-gii-sd/](https://github.com/verteramo/ubu-gii-sd/)
 
 ## Compilación y ejecución
 ### Manual
