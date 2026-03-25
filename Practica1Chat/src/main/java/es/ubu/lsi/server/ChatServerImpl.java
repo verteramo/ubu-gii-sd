@@ -22,6 +22,9 @@ import es.ubu.lsi.common.ChatMessage.MessageType;
  */
 public class ChatServerImpl implements ChatServer {
 
+	/** Patrocinador. */
+	private static final String PATROCINADOR = "Marcelo patrocina el mensaje";
+
 	/** Default port. */
 	private static final int DEFAULT_PORT = 1500;
 
@@ -122,8 +125,7 @@ public class ChatServerImpl implements ChatServer {
 	 * @param event event
 	 */
 	private void show(String event) {
-		String time = sdf.format(new Date()) + " " + event;
-		System.out.println(time);
+		System.out.println(String.format("%s: %s %s", PATROCINADOR, sdf.format(new Date()), event));
 	}
 
 	/**
