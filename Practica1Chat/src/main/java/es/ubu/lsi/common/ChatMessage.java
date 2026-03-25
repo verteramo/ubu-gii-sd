@@ -20,6 +20,7 @@ public class ChatMessage implements Serializable {
 	 * 
 	 * @author Raúl Marticorena
 	 * @author Joaquin P. Seco
+	 * @author Marcelo Verteramo Pérsico
 	 */
 	public enum MessageType {
 		/** Message. */
@@ -28,7 +29,9 @@ public class ChatMessage implements Serializable {
 		SHUTDOWN,		
 		/** Logout client. */
 		LOGOUT,
+		/** Comando BAN. */
 		BAN,
+		/** Comando UNBAN. */
 		UNBAN;
 	}
 	

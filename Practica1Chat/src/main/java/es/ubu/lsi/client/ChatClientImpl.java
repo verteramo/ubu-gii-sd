@@ -13,7 +13,7 @@ import es.ubu.lsi.common.ChatMessage.MessageType;
  * @author http://www.dreamincode.net
  * @author Raúl Marticorena
  * @author Joaquin P. Seco
- *
+ * @author Marcelo Verteramo Pérsico
  */
 public class ChatClientImpl implements ChatClient {
 
@@ -117,6 +117,62 @@ public class ChatClientImpl implements ChatClient {
 	}
 
 	/**
+	 * Sobrecarga que envía un comando.
+	 * 
+	 * @param type Comando
+	 */
+	public void sendMessage(MessageType type) {
+		sendMessage(new ChatMessage(id, type, type.toString()));
+	}
+
+	/**
+	 * Sobrecarga que envía un texto arbitrario.
+	 * 
+	 * @param text Texto
+	 */
+	public void sendMessage(String text) {
+		sendMessage(new ChatMessage(id, MessageType.MESSAGE, text));
+	}
+
+	/**
+	 * Sobrecarga que envía un comando y el texto que lo acompaña.
+	 * 
+	 * @param type Comando
+	 * @param text Texto
+	 */
+	public void sendMessage(MessageType type, String text) {
+		sendMessage(new ChatMessage(id, type, text.substring(type.toString().length()).trim()));
+	}
+
+	/**
+	 * Verifica si la entrada del usuario es un comando determinado.
+	 * 
+	 * @param text Entrada del usuario
+	 * @param type Comando a verificar
+	 * @return Verdadero si la entrada coincide con el comando, Falso en caso
+	 *         contrario
+	 */
+	private boolean isCommand(String text, MessageType type) {
+		switch (type) {
+			case LOGOUT:
+			case SHUTDOWN:
+				// Comandos para los que se debe comparar toda la cadena
+				return text.equalsIgnoreCase(type.toString());
+
+			case BAN:
+			case UNBAN:
+				// Comandos para los que se debe comparar solo el comienzo de la cadena
+				String[] partes = text.split(" ");
+				if (partes.length > 0) {
+					return partes[0].equalsIgnoreCase(type.toString());
+				}
+
+			default:
+				return false;
+		}
+	}
+
+	/**
 	 * Disconnect client closing resources.
 	 */
 	@Override
@@ -209,29 +265,41 @@ public class ChatClientImpl implements ChatClient {
 			while (clientChat.carryOn) {
 				System.out.print("> ");
 				// read message from user
-				String userMsg = scan.nextLine();
-				// logout if message is LOGOUT
-				if (userMsg.equalsIgnoreCase(MessageType.LOGOUT.toString())) {
-					client.sendMessage(new ChatMessage(clientChat.id, MessageType.LOGOUT,
-							MessageType.LOGOUT.toString()));
-					// break to do the disconnect
+				String input = scan.nextLine();
+
+				// Comando LOGOUT
+				if (clientChat.isCommand(input, MessageType.LOGOUT)) {
+					clientChat.sendMessage(MessageType.LOGOUT);
 					break;
 
-				} else if (userMsg.equalsIgnoreCase(MessageType.SHUTDOWN.toString())) {
-					client.sendMessage(new ChatMessage(clientChat.id, MessageType.SHUTDOWN,
-							MessageType.SHUTDOWN.toString()));
-					// break to do the disconnect
-					break;
-
-				} else if (userMsg.toUpperCase().startsWith(MessageType.BAN.toString())) {
-					String username = userMsg.toLowerCase().replace(MessageType.BAN.toString().toLowerCase(), "").trim();
-					client.sendMessage(new ChatMessage(clientChat.id, MessageType.BAN, username));
-				} else if (userMsg.toUpperCase().startsWith(MessageType.UNBAN.toString())) {
-					String username = userMsg.toLowerCase().replace(MessageType.UNBAN.toString().toLowerCase(), "").trim();
-					client.sendMessage(new ChatMessage(clientChat.id, MessageType.UNBAN, username));
-				} else {
-					client.sendMessage(new ChatMessage(clientChat.id, MessageType.MESSAGE, userMsg));
 				}
+
+				// Comando SHUTDOWN
+				else if (clientChat.isCommand(input, MessageType.SHUTDOWN)) {
+					clientChat.sendMessage(MessageType.SHUTDOWN);
+					break;
+
+				}
+
+				// Comandos no abortantes
+				else {
+
+					// Comando BAN
+					if (clientChat.isCommand(input, MessageType.BAN)) {
+						clientChat.sendMessage(MessageType.BAN, input);
+					}
+
+					// Comando UNBAN
+					else if (clientChat.isCommand(input, MessageType.UNBAN)) {
+						clientChat.sendMessage(MessageType.UNBAN, input);
+					}
+
+					// Mensaje normal
+					else {
+						clientChat.sendMessage(input);
+					}
+				}
+
 				System.out.println();
 			} // try with resources
 		}

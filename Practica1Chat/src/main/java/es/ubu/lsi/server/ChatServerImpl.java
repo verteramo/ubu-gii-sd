@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.function.Consumer;
 
 import es.ubu.lsi.common.ChatMessage;
 import es.ubu.lsi.common.ChatMessage.MessageType;
@@ -17,7 +18,7 @@ import es.ubu.lsi.common.ChatMessage.MessageType;
  * @author http://www.dreamincode.net
  * @author Raúl Marticorena
  * @author Joaquin P. Seco
- *
+ * @author Marcelo Verteramo Pérsico
  */
 public class ChatServerImpl implements ChatServer {
 
@@ -136,39 +137,70 @@ public class ChatServerImpl implements ChatServer {
 	}
 
 	/**
-	 * Realiza un broadcast selectivo por nombre de usuario
-	 * @param username Nombre de usuario que envía el mensaje
-	 * @param message Mensaje
+	 * Utilidad para formatear mensajes con hora y usuario,
+	 * puesto que se tiene que hacer en más de un sitio.
+	 * 
+	 * @param username Nombre de usuario
+	 * @param message  Mensaje
+	 * @return Mensaje formateado con hora y usuario: '[hora] [usuario]: [mensaje]'
 	 */
-	public synchronized void selectiveBroadcast(String username, ChatMessage message) {
-		// add HH:mm:ss and \n to the message
-		String time = sdf.format(new Date());
-		String messageLf = String.format("%s %s: %s\n", time, username, message.getMessage());
-		message.setMessage(messageLf);
+	private String getFormattedMessage(String username, ChatMessage message) {
+		return String.format("%s %s: %s\n", sdf.format(new Date()), username, message.getMessage());
+	}
 
-		// display message on console
-		System.out.print(messageLf);
+	/**
+	 * Sobrecarga para formatear mensajes con solo hora,
+	 * puesto que se tiene que hacer en más de un sitio.
+	 * 
+	 * @param message Mensaje
+	 * @return Mensaje formateado con hora: '[hora] [mensaje]'
+	 */
+	private String getFormattedMessage(ChatMessage message) {
+		return String.format("%s %s\n", sdf.format(new Date()), message.getMessage());
+	}
 
-		// we loop in reverse order in case we would have to remove a Client
-		// because it has disconnected
+	/**
+	 * Bucle inverso por la lista de clientes conectados
+	 * Permite aplicar un consumidor por cada cliente
+	 * Verifica si el cliente está desconectado, si lo estuviera es eliminado de la
+	 * lista
+	 * 
+	 * @param consumer Consumidor que realiza alguna función con un cliente
+	 */
+	private void reversedForEach(Consumer<ServerThreadForClient> consumer) {
+		// Bucle en orden inverso
 		for (int i = clients.size(); --i >= 0;) {
 			ServerThreadForClient ct = clients.get(i);
-			if (!ct.blackList.contains(username)) {
-				// try to write to the Client if it fails remove it from the list
-				if (!ct.sendMessage(message)) {
-					clients.remove(i);
-					show("Disconnected Client " + ct.username
-							+ " removed from list.");
-				}
-			}
-			else {
-				// No hay que olvidar verificar si sigue en línea
-				if (!ct.socket.isConnected()) {
-					ct.close();
-					clients.remove(i);
-				}
+			// Aplicación del consumidor
+			consumer.accept(ct);
+			// Si el cliente no sigue conectado, se elimina de la lista
+			if (!ct.socket.isConnected()) {
+				ct.close();
+				clients.remove(i);
+				show("Disconnected Client %s removed from list.", ct.username);
 			}
 		}
+	}
+
+	/**
+	 * Realiza un broadcast selectivo por nombre de usuario
+	 * 
+	 * @param username Nombre de usuario que envía el mensaje
+	 * @param message  Mensaje
+	 */
+	public synchronized void filteredBroadcast(String username, ChatMessage message) {
+		// Construcción del mensaje formateado
+		String messageLf = getFormattedMessage(username, message);
+		message.setMessage(messageLf);
+		System.out.print(messageLf);
+
+		// Bucle por clientes conectados
+		reversedForEach(ct -> {
+			// Envío selectivo (en función de lista negra)
+			if (!ct.blackList.contains(username)) {
+				ct.sendMessage(message);
+			}
+		});
 	}
 
 	/**
@@ -178,25 +210,13 @@ public class ChatServerImpl implements ChatServer {
 	 */
 	@Override
 	public synchronized void broadcast(ChatMessage message) {
-		// add HH:mm:ss and \n to the message
-		String time = sdf.format(new Date());
-		String messageLf = time + " " + message.getMessage() + "\n";
+		// Construcción del mensaje formateado
+		String messageLf = getFormattedMessage(message);
 		message.setMessage(messageLf);
-
-		// display message on console
 		System.out.print(messageLf);
 
-		// we loop in reverse order in case we would have to remove a Client
-		// because it has disconnected
-		for (int i = clients.size(); --i >= 0;) {
-			ServerThreadForClient ct = clients.get(i);
-			// try to write to the Client if it fails remove it from the list
-			if (!ct.sendMessage(message)) {
-				clients.remove(i);
-				show("Disconnected Client " + ct.username
-						+ " removed from list.");
-			}
-		}
+		// Bucle por clientes conectados
+		reversedForEach(ct -> ct.sendMessage(message));
 	}
 
 	/**
@@ -333,8 +353,8 @@ public class ChatServerImpl implements ChatServer {
 						break;
 					case MESSAGE:
 						// Cuando se trata de un mensaje de usuario
-						// Se realiza un broadcast selectivo
-						selectiveBroadcast(username, chatMessage);
+						// Se realiza un broadcast filtrado
+						filteredBroadcast(username, chatMessage);
 						break;
 					case LOGOUT:
 						show(username + " disconnected with a LOGOUT message.");
