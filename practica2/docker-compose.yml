@@ -1,0 +1,70 @@
+services:
+
+  db:
+    image: mysql:8.0.31-oracle
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD_DES
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE_DES
+    ports:
+      - $MYSQLDB_LOCAL_PORT:$MYSQLDB_DOCKER_PORT_DES
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: api
+      args:
+        - API_POKEAPI_URL=$API_POKEAPI_URL
+    restart: unless-stopped
+    ports:
+      - $API_LOCAL_PORT:$API_DOCKER_PORT
+    environment:
+      - API_POKEAPI_URL=$API_POKEAPI_URL
+      - API_DOCKER_PORT=$API_DOCKER_PORT
+    networks:
+      - app-network
+
+  app:
+    depends_on:
+      - db
+      - api
+    build: app
+    restart: on-failure
+    ports:
+      - $SPRING_LOCAL_PORT_DES:$SPRING_DOCKER_PORT_DES
+    environment:
+      - APP_CONTAINER_NAME_DES=$APP_CONTAINER_NAME_DES
+      - SPRING-DATASOURCE-USERNAME=$MYSQLDB_USER_DES
+      - SPRING-DATASOURCE-PASSWORD=$MYSQLDB_ROOT_PASSWORD_DES
+      - SPRING-DATASOURCE-DRIVER-CLASS-NAME=$SPRING_DATASOURCE_DRIVER_CLASS_NAME_DES
+      - SPRING-JPA-HIBERNATE-DLL-AUTO=$SPRING_JPA_HIBERNATE_DLL_AUT_DES
+      - SPRING-JPA-SHOW-SQL=false
+      - SERVER-PORT=$SPRING_DOCKER_PORT_DES
+      - SPRING-DATASOURCE-URL=jdbc:mysql://db:$MYSQLDB_DOCKER_PORT_DES/$MYSQLDB_DATABASE_DES?useSSL=false&allowPublicKeyRetrieval=true
+      - APP_API_URL=$APP_API_URL
+    networks:
+      - app-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./.m2:/home/nonroot/.m2
+      - ./app/src/main/resources:/app/resources
+      - type: bind
+        source: ./certificates
+        target: /certificates
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db:

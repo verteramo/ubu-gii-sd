@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{application}">
+
+<head>
+    <title th:text="#{dashboard.title}">dashboard.title</title>
+</head>
+
+<body>
+    <main layout:fragment="app-content">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="card-title mb-0" th:text="#{dashboard.pokemoncard.title}">dashboard.pokemoncard.title
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/dashboard/pokemon}" method="get" class="mb-4">
+                            <div class="input-group">
+                                <input type="text" name="nombre" class="form-control"
+                                    th:placeholder="#{dashboard.pokemoncard.input.placeholder}" required>
+                                <button class="btn btn-primary" type="submit"
+                                    th:text="#{dashboard.pokemoncard.button}">dashboard.pokemoncard.button</button>
+                            </div>
+                        </form>
+
+                        <div th:if="${pokemon}" class="mt-4 p-3 border rounded bg-white shadow-sm">
+                            <h6 th:text="#{dashboard.pokemoncard.output.label}" class="border-bottom pb-2 mb-3">
+                                dashboard.pokemoncard.output.label</h6>
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <img th:src="${pokemon.picture}" th:alt="${pokemon.name}"
+                                        class="img-fluid bg-light border rounded-circle"
+                                        style="width: 100px; height: 100px;">
+                                </div>
+                                <div class="col">
+                                    <h4 class="mb-0">
+                                        <span th:text="${pokemon.name}" class="text-capitalize">pokemon.name</span>
+                                        <span class="text-muted fs-6">#<span
+                                                th:text="${pokemon.id}">pokemon.id</span></span>
+                                    </h4>
+                                    <div class="row text-muted mt-2 small">
+                                        <div class="col-sm-6 mb-1">
+                                            <i class="fa-solid fa-ruler-vertical me-2 text-primary"></i>
+                                            <strong
+                                                th:text="#{dashboard.pokemoncard.height}">dashboard.pokemoncard.height</strong>:
+                                            <span th:text="${pokemon.height}">pokemon.height</span>
+                                        </div>
+                                        <div class="col-sm-6 mb-1">
+                                            <i class="fa-solid fa-weight-hanging me-2 text-primary"></i>
+                                            <strong
+                                                th:text="#{dashboard.pokemoncard.weight}">dashboard.pokemoncard.weight</strong>:
+                                            <span th:text="${pokemon.weight}">pokemon.weight</span>
+                                        </div>
+                                        <div class="col-12 mt-1">
+                                            <i class="fa-solid fa-star me-2 text-warning"></i>
+                                            <strong
+                                                th:text="#{dashboard.pokemoncard.experience}">dashboard.pokemoncard.experience</strong>:
+                                            <span th:text="${pokemon.experience}">pokemon.experience</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="card-title mb-0" th:text="#{dashboard.exceptionscard.title}">
+                            dashboard.exceptionscard.title</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="text-muted small" th:text="#{dashboard.exceptionscard.info}">
+                            dashboard.exceptionscard.info
+                        </p>
+
+                        <div class="d-grid gap-3">
+                            <a th:href="@{/dashboard/error-archivo}" class="btn btn-outline-warning text-dark fw-bold"
+                                th:text="#{dashboard.exceptionscard.file.button}">dashboard.exceptionscard.file.button</a>
+                            <a th:href="@{/dashboard/error-db}" class="btn btn-outline-danger fw-bold"
+                                th:text="#{dashboard.exceptionscard.db.button}">dashboard.exceptionscard.db.button</a>
+                        </div>
+
+                        <div th:if="${error}"
+                            class="mt-4 alert alert-danger border-start border-4 border-danger shadow-sm d-flex align-items-center">
+                            <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
+                            <div th:text="#{__${error}__}">error</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+</body>
+
+</html>
