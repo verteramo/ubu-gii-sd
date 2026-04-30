@@ -16,14 +16,27 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <form th:action="@{/dashboard/pokemon}" method="get" class="mb-4">
+                        <form th:action="@{/dashboard/pokemon}" method="post" class="mb-4">
                             <div class="input-group">
-                                <input type="text" name="nombre" class="form-control"
+                                <input type="text" name="name" class="form-control"
                                     th:placeholder="#{dashboard.pokemoncard.input.placeholder}" required>
                                 <button class="btn btn-primary" type="submit"
                                     th:text="#{dashboard.pokemoncard.button}">dashboard.pokemoncard.button</button>
                             </div>
                         </form>
+
+                        <div th:if="${warning}"
+                            class="alert alert-warning border-start border-4 border-warning shadow-sm mb-4">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i>
+                            <span th:text="${warning}">Mensaje de advertencia</span>
+                        </div>
+
+                        <div th:if="${error}"
+                            class="alert alert-danger border-start border-4 border-danger shadow-sm mb-4">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                            <strong th:text="#{error.api.title}">Error del Servidor:</strong>
+                            <span th:text="${error}">Descripción técnica del error</span>
+                        </div>
 
                         <div th:if="${pokemon}" class="mt-4 p-3 border rounded bg-white shadow-sm">
                             <h6 th:text="#{dashboard.pokemoncard.output.label}" class="border-bottom pb-2 mb-3">
@@ -83,12 +96,6 @@
                                 th:text="#{dashboard.exceptionscard.file.button}">dashboard.exceptionscard.file.button</a>
                             <a th:href="@{/dashboard/error-db}" class="btn btn-outline-danger fw-bold"
                                 th:text="#{dashboard.exceptionscard.db.button}">dashboard.exceptionscard.db.button</a>
-                        </div>
-
-                        <div th:if="${error}"
-                            class="mt-4 alert alert-danger border-start border-4 border-danger shadow-sm d-flex align-items-center">
-                            <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
-                            <div th:text="#{__${error}__}">error</div>
                         </div>
                     </div>
                 </div>

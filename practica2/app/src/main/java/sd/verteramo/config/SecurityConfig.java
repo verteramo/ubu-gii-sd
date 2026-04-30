@@ -68,32 +68,16 @@ public class SecurityConfig {
                 .userDetailsService(customUserDetailsService)
                 // Configuración de autorización
                 .authorizeHttpRequests(auth -> auth
-                        // Solo usuarios no logueados pueden entrar a /login
-                        .requestMatchers("/login").anonymous()
                         // Rutas públicas permitidas
                         .requestMatchers("/", "/css/**", "/js/**").permitAll()
                         // Todas las demás rutas requieren autenticación
                         .anyRequest().authenticated())
                 // Configuración del login
                 .formLogin(form -> form
-                        // Página de login
                         .loginPage("/login")
-                        // Ruta para el POST del login
-                        .loginProcessingUrl("/login")
-                        // Redirección en caso de éxito
                         .defaultSuccessUrl("/dashboard", true)
-                        // Redirección en caso de error
-                        .failureUrl("/login?error")
-                        // Ruta pública
                         .permitAll())
-                // En caso de que un usuario autenticado acceda a /login
-                // se produce un AccessDeniedException, en tal caso se redirecciona a /error
-                .exceptionHandling(e -> e
-                        .accessDeniedHandler((req, res, ex) -> {
-                            if (req.getServletPath().equals("/login")) {
-                                res.sendRedirect("/error");
-                            }
-                        }))
+                // Configuración del logout
                 .logout(LogoutConfigurer::permitAll);
 
         return http.build();

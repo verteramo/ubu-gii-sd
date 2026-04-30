@@ -22,6 +22,7 @@ class PokemonDto:
     - experience: Experiencia del pokémon.
     - picture: URL de la imagen del pokémon.
     """
+
     id: int
     name: str
     height: int

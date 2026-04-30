@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */
-@ConfigurationProperties(prefix = "app.api")
+@ConfigurationProperties(prefix = "api")
 public class ApiConfig {
 
     /** URL de la API externa. */

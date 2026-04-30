@@ -19,8 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY src ./src
 
 # Exposición del puerto
-ARG API_DOCKER_PORT
-EXPOSE $API_DOCKER_PORT
+ARG API_PORT
+EXPOSE $API_PORT
 
 # Ejecución de la aplicación
 CMD ["python", "src/main.py"]

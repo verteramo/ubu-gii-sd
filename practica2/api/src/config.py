@@ -13,11 +13,11 @@ class Config:
     """
 
     try:
-        URL = os.environ["API_POKEAPI_URL"].rstrip("/")
-        PORT = int(os.environ["API_DOCKER_PORT"])
-    except KeyError as e:
-        print(f"Error: Variable de entorno no definida: {e}.")
+        POKEAPI_URL = os.environ["POKEAPI_URL"].rstrip("/")
+        PORT = int(os.environ["API_PORT"])
+    except Exception as e:
+        print(f"Error: Fallo en la configuración: {e}.")
         exit(1)
-    except ValueError:
-        print("Error: API_DOCKER_PORT debe ser un entero.")
-        exit(1)
+    else:
+        DEBUG = os.environ.get("API_DEBUG", "false").lower() in ("true", "1", "t")
+    

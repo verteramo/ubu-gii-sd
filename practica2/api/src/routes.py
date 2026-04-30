@@ -6,39 +6,60 @@
 
 
 from dataclasses import asdict
+from werkzeug.exceptions import HTTPException
 
-from flask import Blueprint, jsonify
-import requests
+from flask import Blueprint, abort, jsonify
 from services import fetch_pokemon
 
-api_routes = Blueprint("api", __name__)
+routes = Blueprint("api", __name__)
 
 
-@api_routes.route("/pokemon/<name>", methods=["GET"])
+@routes.app_errorhandler(Exception)
+def handle_exception(e: Exception):
+    if isinstance(e, HTTPException):
+        code = e.code
+        error = {"error": e.name, "message": e.description}
+    else:
+        code = 500
+        error = {"error": "Internal Server Error", "message": str(e)}
+
+    return jsonify(error), code
+
+
+@routes.route("/", methods=["GET"])
+def index():
+    return jsonify({"status": "Ok", "version": "1.0"}), 200
+
+
+@routes.route("/pokemon/<name>", methods=["GET"])
 def get_pokemon(name):
-    try:
-        # Solicitud del pokémon
-        pokemon, status = fetch_pokemon(name)
+    """
+    Endpoint para obtener los datos de un pokémon por su nombre.
 
-        # Retorno de error no encontrado
-        if status == 404:
-            return jsonify({"error": "Not Found"}), 404
+    Args:
+     - name: Nombre del pokémon a buscar.
 
-        # Retorno del objeto
-        return jsonify(asdict(pokemon)), 200
+    Returns:
+     - JSON con los datos del pokémon o mensaje de error si no se encuentra.
+    """
 
-    except requests.exceptions.RequestException as e:
+    # Solicitud del pokémon
+    pokemon, status = fetch_pokemon(name)
 
-        # Retorno de error de conexión
-        return jsonify({"error": e}), 503
+    # Aborto si no se encuentra el pokémon
+    if status == 404:
+        abort(404, description=f"Pokémon '{name}' no encontrado")
+
+    # Retorno del objeto
+    return jsonify(asdict(pokemon)), 200
 
 
-@api_routes.route("/test/file", methods=["GET"])
-def test_file_error(path: str):
-    with open(path, "r") as f:
+@routes.route("/test/file", methods=["GET"])
+def test_file_error():
+    with open("", "r") as f:
         return f.read()
 
 
-@api_routes.route("/test/db", methods=["GET"])
+@routes.route("/test/db", methods=["GET"])
 def test_db_error():
     raise ConnectionError("No se pudo conectar con la base de datos de Flask")

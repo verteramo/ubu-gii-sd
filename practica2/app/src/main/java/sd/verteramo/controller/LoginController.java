@@ -1,5 +1,6 @@
 package sd.verteramo.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,12 @@ public class LoginController {
      * @return Vista de inicio de sesión.
      */
     @GetMapping
-    public String showLogin() {
+    public String login(Authentication authentication) {
+        // Si el usuario ya está autenticado, se redirige al dashboard
+        if (authentication != null && authentication.isAuthenticated()) {
+            return "redirect:/dashboard";
+        }
+
         return "login";
     }
 

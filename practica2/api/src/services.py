@@ -23,7 +23,7 @@ def fetch_pokemon(name: str) -> tuple[PokemonDto | None, int]:
     """
 
     # Solicitud al servicio externo
-    response = requests.get(f"{Config.URL}/pokemon/{name}", timeout=5)
+    response = requests.get(f"{Config.POKEAPI_URL}/pokemon/{name}", timeout=5)
 
     # En caso de no encontrar el pokémon, se propaga el resultado 404
     if response.status_code == 404:
