@@ -1,5 +1,6 @@
 ############################################
 # Configuración
+# Variables de entorno necesarias para el funcionamiento de la API.
 #
 # Alumno: Marcelo Verteramo Pérsico (mvp1011@qalu.ubu.es)
 ############################################
@@ -19,5 +20,4 @@ class Config:
         print(f"Error: Fallo en la configuración: {e}.")
         exit(1)
     else:
-        DEBUG = os.environ.get("API_DEBUG", "false").lower() in ("true", "1", "t")
-    
+        DEBUG = os.environ.get("API_DEBUG", "false").lower() in ("true", "1")

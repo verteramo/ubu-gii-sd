@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * Entidad de persistencia que representa la estructura de la tabla 'role'
- * en la base de datos.
+ * Entidad de persistencia de un rol en la aplicación.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

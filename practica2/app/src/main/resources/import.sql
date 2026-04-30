@@ -1,3 +1,9 @@
+--
+-- Creación de usuario de pruebas
+--
+-- Alumno: Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
+--
+
 -- Rol 'ADMIN'
 INSERT INTO role (id, role_name, show_on_create) VALUES (1, 'ADMIN', 1);
 

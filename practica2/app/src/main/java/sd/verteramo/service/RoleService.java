@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Capa de servicio encargada de gestionar la lógica de negocio y coordinar el
- * acceso a datos para la entidad 'role'.
+ * Capa de servicio encargada de gestionar la lógica de negocio para los roles
+ * de usuario.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository;
 import sd.verteramo.model.Role;
 
 /**
- * Interfaz de acceso a datos para realizar operaciones de persistencia sobre la
- * entidad 'role'.
+ * Interfaz de acceso a datos para la entidad rol.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

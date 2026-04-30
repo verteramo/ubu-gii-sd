@@ -14,7 +14,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class Main {
 
 	/**
-	 * Método principal de la aplicación.
+	 * Método de entrada de la aplicación.
 	 * 
 	 * @param args Argumentos de línea de comandos.
 	 */

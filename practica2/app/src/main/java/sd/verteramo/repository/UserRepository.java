@@ -6,8 +6,7 @@ import org.springframework.stereotype.Repository;
 import sd.verteramo.model.User;
 
 /**
- * Interfaz de acceso a datos para realizar operaciones de persistencia sobre la
- * entidad 'user'.
+ * Interfaz de acceso a datos para la entidad usuario.
  *
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

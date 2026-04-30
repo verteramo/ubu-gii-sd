@@ -1,5 +1,6 @@
 ############################################
 # Fichero de rutas
+# Definición de los endpoints de la API y manejo de errores
 #
 # Alumno: Marcelo Verteramo Pérsico (mvp1011@qalu.ubu.es)
 ############################################

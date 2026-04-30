@@ -1,0 +1,97 @@
+<div class="card shadow-sm h-100 border-0">
+    <div class="card-header bg-primary text-white py-3">
+        <h5 class="card-title mb-0">
+            <i class="fa-solid fa-magnifying-glass me-2"></i>
+            <span th:text="#{fragment.pokemon.title}">fragment.pokemon.title</span>
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <form th:action="@{/dashboard/pokemon}" method="post" class="mb-4">
+            <div class="input-group input-group-lg">
+                <input type="text" name="name" class="form-control"
+                    th:placeholder="#{fragment.pokemon.input.placeholder}" required>
+                <button class="btn btn-primary" type="submit">
+                    <i class="fa-solid fa-paper-plane me-2"></i>
+                    <span th:text="#{fragment.pokemon.button}">fragment.pokemon.button</span>
+                </button>
+            </div>
+        </form>
+
+        <!-- Warning -->
+        <div th:if="${notfound}" class="alert alert-warning border-0 shadow-sm">
+            <i class="fa-solid fa-circle-info me-2"></i>
+            <span th:text="#{fragment.pokemon.notfound}">fragment.pokemon.notfound</span>
+        </div>
+
+        <!-- Pokémon -->
+        <div th:if="${pokemon}"
+            class="mt-4 border-0 rounded-4 shadow-sm overflow-hidden animate__animated animate__fadeIn"
+            style="background: linear-gradient(145deg, #ffffff, #f8f9fa);">
+
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <!-- Imagen con efecto de elevación -->
+                    <div class="col-md-5 text-center mb-3 mb-md-0">
+                        <div class="d-inline-block position-relative">
+                            <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-primary opacity-10"
+                                style="width: 140px; height: 140px;"></div>
+                            <img th:src="${pokemon.picture}" th:alt="${pokemon.name}"
+                                class="img-fluid position-relative z-1 animate__animated animate__pulse animate__infinite animate__slow"
+                                style="width: 130px; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));">
+                        </div>
+                    </div>
+
+                    <!-- Información detallada -->
+                    <div class="col-md-7">
+                        <div class="d-flex align-items-baseline gap-2 mb-2">
+                            <h2 class="text-capitalize fw-bold mb-0" th:text="${pokemon.name}" style="color: #2d3436;">
+                                pokemon.name</h2>
+                            <span class="badge bg-light text-muted border rounded-pill"
+                                th:text="'#' + ${pokemon.id}">pokemon.id</span>
+                        </div>
+
+                        <!-- Stats con iconos -->
+                        <div class="row g-2 mb-3">
+                            <div class="col-6">
+                                <div class="p-2 border rounded-3 bg-white shadow-xs">
+                                    <small class="d-block text-muted"
+                                        th:text="#{fragment.pokemon.height}">fragment.pokemon.height</small>
+                                    <strong class="text-dark">
+                                        <i class="fa-solid fa-ruler-vertical text-info me-1"></i>
+                                        [[${pokemon.height}]] m
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="p-2 border rounded-3 bg-white shadow-xs">
+                                    <small class="d-block text-muted"
+                                        th:text="#{fragment.pokemon.weight}">fragment.pokemon.weight</small>
+                                    <strong class="text-dark">
+                                        <i class="fa-solid fa-weight-hanging text-warning me-1"></i>
+                                        [[${pokemon.weight}]] kg
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Barra de Experiencia -->
+                        <div class="mt-2">
+                            <div class="d-flex justify-content-between mb-1 small">
+                                <span class="fw-bold"
+                                    th:text="#{fragment.pokemon.experience}">fragment.pokemon.experience</span>
+                                <span class="text-primary fw-bold"
+                                    th:text="${pokemon.experience} + ' XP'">pokemon.experience</span>
+                            </div>
+                            <div class="progress" style="height: 8px; border-radius: 10px; background-color: #eee;">
+                                <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                    role="progressbar"
+                                    th:style="'width: ' + (${pokemon.experience} > 100 ? 100 : ${pokemon.experience}) + '%'">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

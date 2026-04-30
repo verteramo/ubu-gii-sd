@@ -7,8 +7,7 @@ import sd.verteramo.dto.UserDto;
 import sd.verteramo.model.User;
 
 /**
- * Componente encargado de la conversión simétrica entre la entidad 'user' y
- * objetos DTO.
+ * Mapeador para convertir entre el modelo de usuario y su DTO correspondiente.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

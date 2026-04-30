@@ -17,7 +17,7 @@ public class MainController {
     /**
      * Control de solicitudes GET.
      * En esta aplicación no hay, de momento, una página principal; por lo que las
-     * solicitudes, son redirigidas al panel de control.
+     * solicitudes son redirigidas al panel de control.
      *
      * @param model Modelo de la vista.
      * @return Redirección al panel de control.

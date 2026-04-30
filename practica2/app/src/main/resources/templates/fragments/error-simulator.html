@@ -1,0 +1,36 @@
+<div class="card shadow-sm h-100 border-0">
+    <div class="card-header bg-dark text-white py-3">
+        <h5 class="card-title mb-0">
+            <i class="fa-solid fa-bug me-2"></i>
+            <span th:text="#{fragment.errorsimulator.title}">fragment.errorsimulator.title</span>
+        </h5>
+    </div>
+    <div class="card-body p-4">
+        <p class="text-muted mb-4" th:text="#{fragment.errorsimulator.info}">fragment.errorsimulator.info</p>
+
+        <div class="d-grid gap-3">
+            <form th:action="@{/dashboard/test-file}" method="post">
+                <button type="submit" class="btn btn-outline-secondary w-100 py-2 fw-bold"
+                    th:text="#{fragment.errorsimulator.fileerror.button}">
+                    <i class="fa-solid fa-file-circle-exclamation me-2"></i>
+                    fragment.errorsimulator.fileerror.button
+                </button>
+            </form>
+            <form th:action="@{/dashboard/test-db}" method="post">
+                <button type="submit" class="btn btn-outline-danger w-100 py-2 fw-bold"
+                    th:text="#{fragment.errorsimulator.dberror.button}">
+                    <i class="fa-solid fa-database me-2"></i>
+                    fragment.errorsimulator.dberror.button
+                </button>
+            </form>
+        </div>
+
+        <!-- Panel de errores -->
+        <div th:if="${error}" class="mt-4 alert alert-danger border-0 shadow-sm">
+            <div class="d-flex align-items-center">
+                <i class="fa-solid fa-triangle-exclamation fs-4 me-3"></i>
+                <span class="small" th:text="${error}">error</span>
+            </div>
+        </div>
+    </div>
+</div>

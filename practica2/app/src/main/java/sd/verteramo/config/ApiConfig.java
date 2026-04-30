@@ -4,7 +4,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuración de la API externa.
- * Obtiene la propiedades de app.api.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

@@ -5,8 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Objeto de transferencia de datos de Pokémon.
- * * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
+ * DTO para representar un pokémon obtenido de la API de Flask.
+ * 
+ * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */
 @Data
 @NoArgsConstructor

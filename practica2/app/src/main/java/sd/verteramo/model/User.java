@@ -8,8 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * Entidad de persistencia que representa la estructura de la tabla 'user'
- * en la base de datos.
+ * Entidad de persistencia de un usuario en la aplicación.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

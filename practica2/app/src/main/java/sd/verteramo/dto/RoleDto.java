@@ -5,8 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Objeto de transferencia de datos utilizado para desacoplar la capa de
- * persistencia de la entidad 'role' de la vista.
+ * DTO para representar un rol en la aplicación.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

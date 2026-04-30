@@ -9,8 +9,8 @@ import sd.verteramo.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 /**
- * Capa de servicio encargada de gestionar la lógica de negocio y coordinar el
- * acceso a datos para la entidad 'user'.
+ * Capa de servicio encargada de gestionar la lógica de negocio para los
+ * usuarios.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

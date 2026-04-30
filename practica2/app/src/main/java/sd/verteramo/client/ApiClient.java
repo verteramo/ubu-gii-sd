@@ -14,7 +14,7 @@ import sd.verteramo.dto.PokemonDto;
 import sd.verteramo.exception.ApiException;
 
 /**
- * Cliente para consumir la API de Flask que proporciona datos de Pokémon.
+ * Cliente para consumir la API de Flask.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */
@@ -47,11 +47,39 @@ public class ApiClient {
 
             // Si la respuesta es exitosa, se devuelve el DTO envuelto en Optional
             return Optional.ofNullable(response);
+
         } catch (HttpClientErrorException.NotFound e) {
             // Si la API responde con un 404, significa que el Pokémon no existe
             return Optional.empty();
+
         } catch (RestClientResponseException e) {
             // Captura de errores de servidor: 500, 503, etc.
+            ApiErrorDto error = e.getResponseBodyAs(ApiErrorDto.class);
+            throw new ApiException(error);
+        }
+    }
+
+    /**
+     * Método para probar la gestión de errores de tipo archivo.
+     */
+    public void testFileError() {
+        try {
+            String url = config.getUrl("/test/file");
+            restTemplate.getForObject(url, Void.class);
+        } catch (RestClientResponseException e) {
+            ApiErrorDto error = e.getResponseBodyAs(ApiErrorDto.class);
+            throw new ApiException(error);
+        }
+    }
+
+    /**
+     * Método para probar la gestión de errores de tipo base de datos.
+     */
+    public void testDbError() {
+        try {
+            String url = config.getUrl("/test/db");
+            restTemplate.getForObject(url, Void.class);
+        } catch (RestClientResponseException e) {
             ApiErrorDto error = e.getResponseBodyAs(ApiErrorDto.class);
             throw new ApiException(error);
         }

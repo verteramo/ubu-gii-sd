@@ -1,6 +1,7 @@
 ############################################
 # Sistemas distribuidos
 # Dockerfile de la imagen de la aplicación web
+#
 # Alumno: Marcelo Verteramo Pérsico (mvp1011@qalu.ubu.es)
 ############################################
 

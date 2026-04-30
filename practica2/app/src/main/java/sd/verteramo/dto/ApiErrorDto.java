@@ -6,7 +6,6 @@ import lombok.AllArgsConstructor;
 
 /**
  * DTO para representar errores de la API de Flask.
- * Se utiliza para mapear respuestas de error como {"error": "Not Found"}.
  * 
  * @author Marcelo Verteramo Pérsico (mvp1011@alu.ubu.es)
  */

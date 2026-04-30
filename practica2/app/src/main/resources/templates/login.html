@@ -10,7 +10,7 @@
     <div class="bg-light d-flex align-items-center vh-100">
         <div class="container border rounded p-4 bg-white shadow-sm" style="max-width: 400px;">
             <h2 class="text-center mb-1" th:text="#{login.title}">login.title</h2>
-            <p class="text-center text-muted small mb-4" th:text="#{login.test.credentials}">login.test.credentials
+            <p class="text-center text-muted small mb-4" th:text="#{login.testcredentials}">login.testcredentials
             </p>
 
             <form th:action="@{/login}" method="post">
@@ -26,7 +26,7 @@
                 </div>
 
                 <div th:if="${param.error}" class="alert alert-danger py-2">
-                    <p class="mb-0 small" th:text="#{login.error.message}">login.error.message</p>
+                    <p class="mb-0 small" th:text="#{login.errormessage}">login.errormessage</p>
                 </div>
 
                 <button type="submit" class="btn btn-primary w-100" th:text="#{login.button}">login.button</button>

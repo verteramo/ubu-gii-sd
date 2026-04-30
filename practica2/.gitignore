@@ -34,3 +34,7 @@ build/
 
 ### Maven ###
 .m2/
+
+### Python ###
+__pycache__/
+
