@@ -1,0 +1,60 @@
+@startuml
+skinparam direction top to bottom
+skinparam componentStyle uml2
+
+title Arquitectura: Spring Boot (Local DB) + Flask (PokeAPI)
+
+package "Cliente" {
+    [Navegador] as Usuario
+    [Postman] as ClienteAPILocal
+}
+
+package "Aplicación Spring Boot" <<container>> {
+    component "Frontend" as FE {
+        [Vistas Thymeleaf]
+    }
+    component "Backend" as BE {
+        [Lógica de negocio] as BL
+        [Cliente API local] as APILocal
+        [Repositorios JPA] as ReposJPA
+    }
+}
+
+database "Almacenamiento" {
+    [Base de datos local (MySQL)] as DB
+}
+
+package "Microservicio Python" <<container>> as APIFlask {
+    component "API Flask" as Flask {
+        [Client HTTP] as ClienteHTTP
+        [Manejo de errores]
+    }
+}
+
+cloud "Servicios externos" {
+    [pokeapi.co] as PokeAPI
+}
+
+' Flujo de la aplicación
+Usuario -down-> FE : Acceso Web
+ClienteAPILocal -down-> APIFlask : Consumo de API
+APILocal -r->APIFlask
+FE -down-> BL : Peticiones Internas
+
+' Spring consume DB Local
+ReposJPA -down-> DB : Persistencia (JPA/Hibernate)
+
+' Spring consume Flask
+APILocal -right-> Flask : Invocación API (REST)
+
+' Flask consume PokeAPI
+ClienteHTTP -down-> PokeAPI : Consumo de datos externos
+
+note top of APIFlask
+  Genera excepciones de:
+  - Conexión con PokeAPI
+  - Fichero inexistente
+  - Conexión con base de datos ficticia
+end note
+
+@endum
